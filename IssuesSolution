@@ -1,0 +1,77 @@
+
+****************************************************************************************
+8.JenkinsTips&Tricks:
+
+Crumb:
+Inconveniente con la creación del  Crumb utilizando el script crumb.sh desde la cósola.:
+
+error "403 No valid crumb was included in the request"
+
+Solución:
+https://jenkins.io/doc/upgrade-guide/2.176/#SECURITY-626
+
+* Instala un plugin llamado Strict Crumb Issue
+* Administrar Jenkins -> Configurar seguridad global -> Protección CSRF.
+* Selecciona Strict Crumb Issuer.
+* Click en Advanced.
+* Desactiva la casilla Check Session Id.
+* Guárdalo.
+
+****************************************************************************************
+12.Jenkins&GIT
+
+Cambio clave root (Necesario la primera vez):
+
+Soluciṕon:
+https://stackoverflow.com/questions/60062065/gitlab-initial-root-password
+
+Desde la cónsola del git-server
+$ gitlab-rake "gitlab:password:reset[root]"
+$ gitlab-rake "gitlab:password:reset[portilloga]"
+
+
+Gitlab 15 no guarda estructura de repositorios legible, ahora lo hace con hash.(video 102)
+
+Solución:
+Identificar el repositorio a utilizar (vienod las rutas hash):
+
+Abrir consola de rubyt rails en el git-verver:
+$ sudo gitlab-rails console
+
+Ejecutar:
+ProjectRepository.find_by(disk_path: '@hashed/b1/7e/b17ef6d19c7a5b1ee83b907c595526dcb1eb06db8227d650d5dda0a9f4ce8cd9').project
+
+Escribir directamente el git hook allí.
+https://docs.gitlab.com/ee/administration/operations/rails_console.html#starting-a-rails-console-session
+https://docs.gitlab.com/ee/administration/repository_storage_types.html#translate-hashed-storage-paths
+
+****************************************************************************************
+12.Jenkins&DSL
+
+Error al ejecutar jod-dsl:
+
+Started by user admin
+Running as SYSTEM
+Building in workspace /var/jenkins_home/workspace/job-dsl
+Processing provided DSL script
+ERROR: script not yet approved for use
+Finished: FAILURE
+
+Solución:
+https://stackoverflow.com/questions/43699190/seed-job-asks-for-script-approval-in-jenkins
+
+Job DSL version 1.60 introduced Script Security, to restore old behavior, uncheck Enable script security for Job DSL scripts in the CSRF Protection section of the "Configure Global Security" page. This should only be done if you have another way of approving scripts, such as through git pull request approval if your seed job builds jobs living in 
+git.
+
+
+
+****************************************************************************************
+15.
+Ejecutar un contenedor con maven (maven:3-alpine) tomando el repositorio .m2 del host y ejecutando un maven package al iniciar.(video 148):
+docker run --rm -v /home/portilloga:/root/.m2 -v $PWD/java-app:/app -w /app maven:3-alpine mvn -B -DskipTest clean package
+
+Crear un docker registry para guardar imágenes docker (video 150):
+docker run -d -p 5000:5000 -v /tmp/registry:/var/lib/registry/docker --name registry registry:2
+
+/var/lib/registry/docker/registry/v2/repositories/
+
